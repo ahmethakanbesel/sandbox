@@ -49,7 +49,7 @@ func TestExtractLinkByParsing(t *testing.T) {
 	}
 }
 
-func ExtractLinkByRegex(htmlContent string) (string, error) {
+func ExtractLinkByRegexStringSubmatch(htmlContent string) (string, error) {
 	const pattern = `href="([^"]+\.pdf)`
 	re := regexp.MustCompile(pattern)
 
@@ -62,8 +62,28 @@ func ExtractLinkByRegex(htmlContent string) (string, error) {
 	return matches[1], nil
 }
 
-func TestExtractLinkByRegex(t *testing.T) {
-	link, err := ExtractLinkByRegex(shortInput)
+func TestExtractLinkByRegexStringSubmatch(t *testing.T) {
+	link, err := ExtractLinkByRegexStringSubmatch(shortInput)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if link != groundTruth {
+		t.Fatalf("expected %s, got %s", groundTruth, link)
+	}
+}
+
+func ExtractLinkByRegexFindString(htmlContent string) (string, error) {
+	const pattern = `([^"]+\.pdf)`
+
+	re := regexp.MustCompile(pattern)
+	match := re.FindString(htmlContent)
+
+	return match, nil
+}
+
+func TestExtractLinkByRegexFindString(t *testing.T) {
+	link, err := ExtractLinkByRegexFindString(shortInput)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,8 +99,14 @@ func BenchmarkExtractLinkByParsing(b *testing.B) {
 	}
 }
 
-func BenchmarkExtractLinkByRegex(b *testing.B) {
+func BenchmarkExtractLinkByRegexStringSubmatch(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ExtractLinkByRegex(shortInput)
+		ExtractLinkByRegexStringSubmatch(shortInput)
+	}
+}
+
+func BenchmarkExtractLinkByRegexFindString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ExtractLinkByRegexFindString(shortInput)
 	}
 }
