@@ -1,6 +1,6 @@
-# titck-scraper
+# titck scraper
 
-Downloads and extract medicine information leaflets from
+Download and extract medicine information leaflets from
 https://www.titck.gov.tr/kubkt
 
 ## Usage
