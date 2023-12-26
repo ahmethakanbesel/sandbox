@@ -1,0 +1,6 @@
+docs/pdf/*.pdf
+docs/txt/*.txt
+.env
+titck-scraper
+titck-scraper.exe
+**/.DS_Store
