@@ -134,7 +134,6 @@ func (s *Scraper) readApiResponse(apiResponseChan <-chan *apiResponse) <-chan *p
 		defer close(pdfDataChan)
 		for apiResponse := range apiResponseChan {
 			for _, item := range apiResponse.Data {
-				// TODO: compare with regex extractor
 				remoteUrl, err := extractPDFLinkFromHTML(item.DocumentPathKub)
 				if err != nil {
 					slog.Error("extractPDFFromHTML error", "error", err)
