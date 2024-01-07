@@ -12,17 +12,6 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - laravel
-  db:
-    image: mariadb:latest
-    container_name: laravel-db
-    restart: unless-stopped
-    environment:
-      MARIADB_USER: test
-      MARIADB_PASSWORD: test
-      MARIADB_DATABASE: test
-      MARIADB_ROOT_PASSWORD: test
-    networks:
-      - laravel
 networks:
   laravel:
     driver: bridge

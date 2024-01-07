@@ -29,7 +29,7 @@ RUN { \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /app
 
 # Copy a new configuration file
 COPY start.sh /start.sh
