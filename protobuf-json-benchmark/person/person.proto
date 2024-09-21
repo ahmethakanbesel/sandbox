@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package person;
+
+option go_package = "github.com/yourusername/benchmark/person";
+
+message Person {
+  string name = 1;
+  int32 age = 2;
+  string email = 3;
+}
