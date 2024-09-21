@@ -1,4 +1,13 @@
 go 1.21.2
 
 use ./titck-scraper
+
 use ./regex-vs-parser-benchmark
+
+use ./speed-up-median-string/go
+
+use ./go-cpp-benchmark/go
+
+use ./zeromq-benchmark
+
+use ./protobuf-json-benchmark
