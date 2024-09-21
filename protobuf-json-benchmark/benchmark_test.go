@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	pb "benchmark/person"
+	pb "protobuf-benchmark/person"
 
 	"google.golang.org/protobuf/proto"
 )
