@@ -1,0 +1,312 @@
+/* Copy JSON button */
+.nrx-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(40, 40, 40, 0.9);
+  color: #e0e0e0;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+/* Always visible variant for JSON chart (no hover wrapper needed) */
+.nrx-copy-btn.nrx-copy-btn--visible {
+  opacity: 0.7;
+}
+
+.nrx-copy-btn.nrx-copy-btn--visible:hover {
+  opacity: 1;
+}
+
+.nrx-copy-btn:hover {
+  background: rgba(60, 60, 60, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.nrx-copy-btn.nrx-copied {
+  background: rgba(30, 120, 60, 0.9);
+  border-color: rgba(50, 180, 80, 0.4);
+}
+
+.nrx-copy-wrapper {
+  position: relative;
+}
+
+.nrx-copy-wrapper:hover .nrx-copy-btn {
+  opacity: 1;
+}
+
+/* Download panel */
+.nrx-download-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100000;
+  width: 380px;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  background: #1a1a1a;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.nrx-download-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #222;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.nrx-download-panel-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nrx-download-panel-close {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.nrx-download-panel-close:hover {
+  color: #fff;
+}
+
+.nrx-download-panel-body {
+  padding: 16px;
+}
+
+.nrx-download-panel-body label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.nrx-download-panel-body input,
+.nrx-download-panel-body select,
+.nrx-download-panel-body textarea {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  font-size: 13px;
+  box-sizing: border-box;
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+}
+
+.nrx-download-panel-body textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.4;
+}
+
+.nrx-download-panel-body input:focus,
+.nrx-download-panel-body select:focus,
+.nrx-download-panel-body textarea:focus {
+  outline: none;
+  border-color: #1ce783;
+}
+
+.nrx-download-panel-settings {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.nrx-download-panel-settings:hover {
+  color: #1ce783;
+}
+
+.nrx-reload-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #aaa;
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.nrx-reload-btn:hover {
+  color: #1ce783;
+  border-color: #1ce783;
+}
+
+.nrx-reload-btn.nrx-reloaded {
+  color: #1ce783;
+  border-color: #1ce783;
+}
+
+.nrx-warning-text {
+  font-size: 12px;
+  color: #f5a623;
+  background: rgba(245, 166, 35, 0.1);
+  border: 1px solid rgba(245, 166, 35, 0.2);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+}
+
+.nrx-info-text {
+  font-size: 12px;
+  color: #5b9bd5;
+  background: rgba(91, 155, 213, 0.1);
+  border: 1px solid rgba(91, 155, 213, 0.2);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+}
+
+.nrx-btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.nrx-download-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background: #1ce783;
+  color: #000;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.nrx-download-btn:hover {
+  background: #15c96e;
+}
+
+.nrx-download-btn:disabled {
+  background: #444;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.nrx-copy-results-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.nrx-copy-results-btn:hover {
+  color: #1ce783;
+  border-color: #1ce783;
+}
+
+.nrx-copy-results-btn:disabled {
+  color: #555;
+  border-color: #333;
+  cursor: not-allowed;
+}
+
+.nrx-copy-results-btn.nrx-copied-results {
+  color: #1ce783;
+  border-color: #1ce783;
+  background: rgba(28, 231, 131, 0.1);
+}
+
+.nrx-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.nrx-progress-bar-fill {
+  height: 100%;
+  background: #1ce783;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.nrx-progress-text {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+.nrx-error-text {
+  font-size: 12px;
+  color: #ff6b6b;
+  margin-bottom: 8px;
+}
+
+/* Floating action button to open download panel */
+.nrx-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 99999;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: #1ce783;
+  color: #000;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(28, 231, 131, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nrx-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(28, 231, 131, 0.4);
+}
+
+.nrx-fab svg {
+  width: 22px;
+  height: 22px;
+}
+
+.nrx-hidden {
+  display: none !important;
+}

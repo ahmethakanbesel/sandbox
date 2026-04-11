@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "NewRelic Extended",
+  "description": "Enhance New Relic experience: copy JSON results and download logs beyond 5000 limit",
+  "version": "1.1.0",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://*.newrelic.com/*"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options/options.html",
+  "content_scripts": [
+    {
+      "matches": ["https://*.newrelic.com/*"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  }
+}
