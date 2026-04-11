@@ -1,0 +1,5 @@
+coverage*
+*.prof
+.claude
+dynamo-pg-client.test
+.DS_Store

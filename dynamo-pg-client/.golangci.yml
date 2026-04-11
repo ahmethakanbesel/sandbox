@@ -1,0 +1,68 @@
+version: "2"
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - gocritic
+    - revive
+    - misspell
+    - prealloc
+    - unconvert
+    - bodyclose
+    - noctx
+    - gosec
+    - errorlint
+    - exhaustive
+    - copyloopvar
+
+  settings:
+    gocritic:
+      enabled-checks:
+        - dupImport
+        - unnecessaryBlock
+      disabled-checks:
+        - ifElseChain
+        - exitAfterDefer
+
+    revive:
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: dot-imports
+        - name: error-return
+        - name: error-strings
+        - name: exported
+          disabled: true
+        - name: increment-decrement
+        - name: indent-error-flow
+        - name: var-naming
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: unexported-return
+        - name: unreachable-code
+
+    gosec:
+      excludes:
+        - G101
+        - G115
+        - G404
+
+    exhaustive:
+      default-signifies-exhaustive: true
+
+    misspell:
+      locale: US
+
+issues:
+  exclude-dirs:
+    - example
+  max-issues-per-linter: 50
+  max-same-issues: 5
+
+run:
+  timeout: 5m
