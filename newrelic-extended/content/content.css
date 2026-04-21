@@ -169,6 +169,42 @@
   border-color: #1ce783;
 }
 
+.nrx-saved-row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+  margin-bottom: 12px;
+}
+
+.nrx-saved-row select {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.nrx-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.nrx-icon-btn:hover:not(:disabled) {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.nrx-icon-btn:disabled {
+  color: #555;
+  border-color: #333;
+  cursor: not-allowed;
+}
+
 .nrx-warning-text {
   font-size: 12px;
   color: #f5a623;

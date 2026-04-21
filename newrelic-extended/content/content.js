@@ -111,6 +111,44 @@
     });
   }
 
+  function getSavedQueries() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(["nrx_saved_queries"], (data) => {
+        const list = Array.isArray(data.nrx_saved_queries) ? data.nrx_saved_queries : [];
+        resolve([...list].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
+      });
+    });
+  }
+
+  async function saveQueryToStorage(name, queryText) {
+    const trimmedName = (name || "").trim();
+    if (!trimmedName) {
+      return { ok: false, error: "Name is required." };
+    }
+    if (!queryText || !queryText.trim()) {
+      return { ok: false, error: "Query is empty." };
+    }
+    const existing = await getSavedQueries();
+    if (existing.some((q) => q.name === trimmedName)) {
+      return { ok: false, error: `A query named "${trimmedName}" already exists.` };
+    }
+    const entry = {
+      id: (crypto.randomUUID && crypto.randomUUID()) || `q_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      name: trimmedName,
+      query: queryText,
+      createdAt: Date.now(),
+    };
+    const next = [entry, ...existing];
+    await new Promise((resolve) => chrome.storage.local.set({ nrx_saved_queries: next }, resolve));
+    return { ok: true, entry };
+  }
+
+  async function deleteSavedQuery(id) {
+    const existing = await getSavedQueries();
+    const next = existing.filter((q) => q.id !== id);
+    await new Promise((resolve) => chrome.storage.local.set({ nrx_saved_queries: next }, resolve));
+  }
+
   function getNerdGraphUrl(region) {
     return region === "EU"
       ? "https://api.eu.newrelic.com/graphql"
@@ -290,6 +328,27 @@
 
   function isLogsView() {
     return !!document.querySelector(".logs-searchbar");
+  }
+
+  function setNrqlOnPage(query) {
+    const aceContainer = document.querySelector(".ace-nrql");
+    if (!aceContainer) return false;
+    const script = document.createElement("script");
+    script.textContent = `
+      (function() {
+        try {
+          var el = document.querySelector(".ace-nrql");
+          if (el && window.ace && typeof window.ace.edit === "function") {
+            var editor = window.ace.edit(el);
+            editor.setValue(${JSON.stringify(query)}, 1);
+            editor.focus();
+          }
+        } catch (e) { console.warn("nrx setNrqlOnPage failed:", e); }
+      })();
+    `;
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
+    return true;
   }
 
   function extractNrqlFromPage() {
@@ -614,12 +673,28 @@
         ${!hasApiKey ? '<div class="nrx-warning-text">API Key not configured. Click the gear icon or open extension settings.</div>' : ""}
         ${fromLucene ? '<div class="nrx-info-text">Lucene query auto-converted to NRQL. Review and adjust if needed.</div>' : ""}
 
+        <label for="nrx-saved-queries">Saved queries</label>
+        <div class="nrx-saved-row">
+          <select id="nrx-saved-queries">
+            <option value="" disabled selected>— Load a saved query —</option>
+          </select>
+          <button class="nrx-icon-btn" id="nrx-delete-saved" title="Delete selected saved query" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
           <label for="nrx-query" style="margin-bottom:0;">NRQL Query</label>
-          <button class="nrx-reload-btn" id="nrx-reload-query" title="Reload query from page">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            Reload
-          </button>
+          <div style="display:flex;gap:6px;">
+            <button class="nrx-reload-btn" id="nrx-save-query" title="Save current query">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save
+            </button>
+            <button class="nrx-reload-btn" id="nrx-reload-query" title="Reload query from page">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Reload
+            </button>
+          </div>
         </div>
         <textarea id="nrx-query" rows="3" placeholder="SELECT * FROM Log WHERE ...">${detectedQuery.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</textarea>
 
@@ -670,6 +745,67 @@
       btn.classList.add("nrx-reloaded");
       setTimeout(() => btn.classList.remove("nrx-reloaded"), 1000);
     });
+
+    let savedQueriesCache = [];
+
+    async function refreshSavedQueries(selectId) {
+      savedQueriesCache = await getSavedQueries();
+      const select = panelEl.querySelector("#nrx-saved-queries");
+      const deleteBtn = panelEl.querySelector("#nrx-delete-saved");
+      if (!select) return;
+      const opts = ['<option value="" disabled' + (selectId ? "" : " selected") + '>— Load a saved query —</option>'];
+      for (const q of savedQueriesCache) {
+        const label = q.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const selected = q.id === selectId ? " selected" : "";
+        opts.push(`<option value="${q.id}"${selected}>${label}</option>`);
+      }
+      select.innerHTML = opts.join("");
+      deleteBtn.disabled = !selectId;
+    }
+
+    panelEl.querySelector("#nrx-saved-queries").addEventListener("change", (e) => {
+      const id = e.target.value;
+      const entry = savedQueriesCache.find((q) => q.id === id);
+      if (entry) {
+        panelEl.querySelector("#nrx-query").value = entry.query;
+        setNrqlOnPage(entry.query);
+      }
+      panelEl.querySelector("#nrx-delete-saved").disabled = !id;
+    });
+
+    panelEl.querySelector("#nrx-save-query").addEventListener("click", async () => {
+      const errorText = panelEl.querySelector("#nrx-error-text");
+      errorText.classList.add("nrx-hidden");
+      const queryText = panelEl.querySelector("#nrx-query").value.trim();
+      if (!queryText) {
+        showError("Cannot save an empty query.");
+        return;
+      }
+      const name = window.prompt("Name this query:");
+      if (name === null) return; // cancelled
+      const result = await saveQueryToStorage(name, queryText);
+      if (!result.ok) {
+        showError(result.error);
+        return;
+      }
+      await refreshSavedQueries(result.entry.id);
+      const btn = panelEl.querySelector("#nrx-save-query");
+      btn.classList.add("nrx-reloaded");
+      setTimeout(() => btn.classList.remove("nrx-reloaded"), 1000);
+    });
+
+    panelEl.querySelector("#nrx-delete-saved").addEventListener("click", async () => {
+      const select = panelEl.querySelector("#nrx-saved-queries");
+      const id = select.value;
+      if (!id) return;
+      const entry = savedQueriesCache.find((q) => q.id === id);
+      if (!entry) return;
+      if (!window.confirm(`Delete saved query "${entry.name}"?`)) return;
+      await deleteSavedQuery(id);
+      await refreshSavedQueries();
+    });
+
+    refreshSavedQueries();
 
     panelEl.querySelector("#nrx-copy-results").addEventListener("click", async () => {
       const latestSettings = await getApiKeyFromStorage();
